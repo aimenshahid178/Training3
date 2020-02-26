@@ -27,40 +27,45 @@ let testArray = [{
     }]
   }];
 
+  // Array has two elements, both are objects. Objects are identical, with 3 primitive value keys, one object and one array 
+  // containing a single object
 
 
 
-// Example of recursive deep cloning function
 const deepCopyFunction = inObject => {
     let outObject, value, key;
   
+    //Handle null, undefined or primitive types
     if(typeof inObject !== "object" || inObject === null) {
-      return inObject; // Return the value if inObject is not an object
+      return inObject;
     }
   
-    // Create an array or object to hold the values
-    outObject = Array.isArray(inObject) ? [] : {};
+    // Copy is either an array or an object
+    if(Array.isArray(inObject)){
+      outObject = [];
+    }
+    else{
+      outObject = {};
+    }
   
+    //Handle objects
     for (key in inObject) {
       value = inObject[key];
-  
-      // Recursively (deep) copy for nested objects, including arrays
-      outObject[key] = (typeof value === "object" && value !== null) ? deepCopyFunction(value) : value;
+      if(typeof value === "object" && value !== null){
+        outObject[key] = deepCopyFunction(value);
+      }
+      else{
+        outObject[key] = value;
+      }
     }
     
     return outObject;
   };
-  
-  let originalArray = [37, 3700, {hello: "world"}]; 
-  console.log(...originalArray); // 37 3700 Object { hello: "world" }
-  
-  let shallowCopiedArray = originalArray.slice();
-  let deepCopiedArray = deepCopyFunction(originalArray);
-  
-  originalArray[1] = 0; // Will affect the original only
-  originalArray[2].hello = "moon"; // Will affect the original and the shallow copy
-  
-  console.log(...originalArray); // 37 0 Object { hello: "moon" }
-  console.log(...shallowCopiedArray); // 37 3700 Object { hello: "moon" }
-  console.log(...deepCopiedArray); // 37 3700 Object { hello: "world" }
+
+  let copy = deepCopyFunction(testArray);
+  copy[0].description = 'Nothing';
+  copy[1].testArray[0].myName = 'Aimen';
+
+  console.log('testArray', testArray);
+  console.log('copy', copy);
   
